@@ -1,14 +1,20 @@
 import * as UI from './selectors.js';
 
-function getPopularCrypto() {
+async function getPopularCrypto() {
     const URL = 'https://min-api.cryptocompare.com/data/top/totalvolfull?limit=10&tsym=EUR'
-
-    fetch(URL)
-        .then(response => response.json())
-        .then( ({Data}) => {
-            addCryptos(Data);
-        })
-        .catch(error => console.log('Error:', error));
+    try {
+        const response = await fetch(URL);
+        const { Data } = await response.json();
+        addCryptos(Data);
+    } catch (error) {
+        console.log('Error: ', error);
+    }
+    // fetch(URL)
+    //     .then(response => response.json())
+    //     .then( ({Data}) => {
+    //         addCryptos(Data);
+    //     })
+    //     .catch(error => console.log('Error:', error));
 }
 
 function addCryptos( cryptosArr ) {
@@ -22,7 +28,7 @@ function addCryptos( cryptosArr ) {
     });
 }
 
-function searchCrypto(e) {
+async function searchCrypto(e) {
     e.preventDefault();
     
     const cryptoValue = UI.cryptoSelect.value;
@@ -38,14 +44,22 @@ function searchCrypto(e) {
 
     // Spinner
     showSpinner();
+    
+    try {
+        const response = await fetch(URL);
+        const data = await response.json();
+        showCryptoData(data.DISPLAY[cryptoValue][currencyValue]);   
+    } catch (error) {
+        console.log('Error: ', error);
+    }
 
-    fetch(URL)
-        .then(response => response.json())
-        .then(data => {
-            // const { PRICE, HIGHDAY, LOWDAY } = data.DISPLAY[cryptoValue][currencyValue];
-            showCryptoData(data.DISPLAY[cryptoValue][currencyValue]);
-        })
-        .catch(error => console.log('Error: ', error));
+    // fetch(URL)
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         // const { PRICE, HIGHDAY, LOWDAY } = data.DISPLAY[cryptoValue][currencyValue];
+    //         showCryptoData(data.DISPLAY[cryptoValue][currencyValue]);
+    //     })
+    //     .catch(error => console.log('Error: ', error));
 }
 
 function showMessage( message ) {
